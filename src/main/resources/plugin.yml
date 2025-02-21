@@ -1,0 +1,21 @@
+name: svcphone
+version: '1.0-SNAPSHOT'
+main: fr.vasolix.svcphone.SimplePhoneCallPlugin
+api-version: '1.21'
+libraries:
+  - org.jetbrains.kotlin:kotlin-maven-plugin:2.1.20-RC
+commands:
+  call:
+    description: Permet d'appeler
+    usage: /call <playername>
+  answer:
+    description: Answer an incoming call.
+    usage: /answer
+  decline:
+    description: Decline an incoming call.
+    usage: /decline
+  hangup:
+    description: Hang up an ongoing call.
+    usage: /hangup
+
+depend: [voicechat]
