@@ -5,10 +5,10 @@ import de.maxhenkel.voicechat.api.VoicechatApi
 import de.maxhenkel.voicechat.api.VoicechatServerApi
 import org.bukkit.plugin.java.JavaPlugin
 
-class SimplePhoneCallPlugin : JavaPlugin() {
+class SVCPlugin : JavaPlugin() {
 
     override fun onEnable() {
-        logger.info("SimplePhoneCall plugin enabled!")
+        logger.info("Plugin SimplePhoneCall activé !")
 
         // Initialisation du CallManager
         val callManager = CallManager()
@@ -21,7 +21,7 @@ class SimplePhoneCallPlugin : JavaPlugin() {
 
         if (service != null) {
             // Enregistrement du plugin pour Simple Voice Chat
-            service.registerPlugin(object : SimplePhoneCallVoicePlugin() {
+            service.registerPlugin(object : SVCVoicePlugin() {
                 override fun initialize(api: VoicechatApi) {
                     logger.info("Voicechat API initialized!")
 
