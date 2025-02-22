@@ -1,5 +1,5 @@
 name: svcphone
-version: '1.0-SNAPSHOT'
+version: '0.1'
 main: fr.vasolix.svcphone.SimplePhoneCallPlugin
 api-version: '1.21'
 libraries:
@@ -9,13 +9,22 @@ commands:
     description: Permet d'appeler
     usage: /call <playername>
   answer:
-    description: Answer an incoming call.
+    description: Répondre à un appel entrant.
     usage: /answer
   decline:
-    description: Decline an incoming call.
+    description: Refuser un appel entrant.
     usage: /decline
   hangup:
-    description: Hang up an ongoing call.
+    description: Raccrocher un appel en cours.
     usage: /hangup
+  block:
+    description: Permet de bloquer des personnes.
+    usage: /block <playername>
+  unblock:
+    description: Permet de débloquer des personnes.
+    usage: /unblock <playername>
+  blocklist:
+    description: Affiche la liste des personnes bloquées.
+    usage: /blocklist
 
 depend: [voicechat]

@@ -14,7 +14,7 @@ class HangupCommand(
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("Only players can use this command.")
+            sender.sendMessage("Seuls les joueurs peuvent utiliser cette commande.")
             return true
         }
 
@@ -23,20 +23,20 @@ class HangupCommand(
 
         // 1. Vérifier si le joueur est dans un appel (accepté ou en attente)
         if (!callManager.hasCall(playerId)) {
-            player.sendMessage("You are not in a call.")
+            player.sendMessage("Vous n'êtes dans aucun appel.")
             return true
         }
 
         // 2. Trouver l'autre participant
         val otherId: UUID? = callManager.getOtherParticipant(playerId)
         if (otherId == null) {
-            player.sendMessage("Could not find the other participant.")
+            player.sendMessage("Impossible de trouver l'autre participant.")
             return true
         }
 
         // 3. Notifier l'autre participant s'il est en ligne
         val otherPlayer: Player? = player.server.getPlayer(otherId)
-        otherPlayer?.takeIf { it.isOnline }?.sendMessage("${player.name} has hung up the call.")
+        otherPlayer?.takeIf { it.isOnline }?.sendMessage("${player.name} a raccroché l'appel.")
 
         // 4. Terminer l'appel des deux côtés
         callManager.endCall(playerId, otherId)
@@ -45,7 +45,7 @@ class HangupCommand(
         serverApi.getConnectionOf(playerId)?.group = null
         serverApi.getConnectionOf(otherId)?.group = null
 
-        player.sendMessage("You hung up the call.")
+        player.sendMessage("Vous avez raccroché l'appel.")
         return true
     }
 }

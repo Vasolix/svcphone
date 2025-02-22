@@ -9,21 +9,21 @@ import org.bukkit.scheduler.BukkitRunnable
 class RingtonePlayer(private val plugin: JavaPlugin) {
 
     private val melodyNotes = arrayOf(
-        Note.natural(0, Note.Tone.E),   // E♭
-        Note.natural(0, Note.Tone.B),   // B♭
-        Note.natural(0, Note.Tone.G),   // G
-        Note.natural(0, Note.Tone.B),   // B♭
-        Note.natural(0, Note.Tone.E),   // E♭
-        Note.natural(0, Note.Tone.B)    // B♭
+        Note.natural(0, Note.Tone.E),   // Mi♭
+        Note.natural(0, Note.Tone.B),   // Si♭
+        Note.natural(0, Note.Tone.G),   // Sol
+        Note.natural(0, Note.Tone.B),   // Si♭
+        Note.natural(0, Note.Tone.E),   // Mi♭
+        Note.natural(0, Note.Tone.B)    // Si♭
     )
 
     private val delays = intArrayOf(
-        11, // E♭ (noire)
-        6,  // B♭ (croche)
-        11, // G (noire)
-        6,  // B♭ (croche)
-        11, // E♭ (noire)
-        11  // B♭ (noire)
+        11, // Mi♭ (noire)
+        6,  // Si♭ (croche)
+        11, // Sol (noire)
+        6,  // Si♭ (croche)
+        11, // Mi♭ (noire)
+        11  // Si♭ (noire)
     )
 
     private val activeRingtones = mutableMapOf<Player, BukkitRunnable>()

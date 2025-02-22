@@ -8,53 +8,64 @@ import org.bukkit.entity.Player
 
 class CallCommand(
     private val callManager: CallManager,
-    private val ringtonePlayer: RingtonePlayer
+    private val ringtonePlayer: RingtonePlayer,
+    private val blockListManager: BlockListManager
 ) : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("Only players can use this command.")
+            sender.sendMessage("Seuls les joueurs peuvent utiliser cette commande.")
             return true
         }
 
         val caller: Player = sender
 
         if (args.isEmpty()) {
-            caller.sendMessage("Usage: /call <playername>")
+            caller.sendMessage("Utilisation : /call <nomdujoueur>")
             return true
         }
 
         val target: Player? = Bukkit.getPlayer(args[0])
 
         if (target == null || !target.isOnline) {
-            caller.sendMessage("The player '${args[0]}' is not online.")
+            caller.sendMessage("Le joueur '${args[0]}' n'est pas en ligne.")
+            return true
+        }
+
+        if (blockListManager.isBlocked(caller.uniqueId, target.uniqueId)) {
+            caller.sendMessage("Vous ne pouvez pas appeler ce joueur car vous l'avez bloqué.")
+            return true
+        }
+
+        if (blockListManager.isBlocked(target.uniqueId, caller.uniqueId)) {
+            caller.sendMessage("Ce joueur vous a bloqué. Vous ne pouvez pas l'appeler.")
             return true
         }
 
         if (callManager.hasActiveCall(target.uniqueId)) {
-            caller.sendMessage("That player is already receiving a call.")
+            caller.sendMessage("Ce joueur est déjà en train de recevoir un appel.")
             return true
         }
 
         if (callManager.hasActiveCall(caller.uniqueId)) {
-            caller.sendMessage("You are already in a call!")
+            caller.sendMessage("Vous êtes déjà en communication !")
             return true
         }
 
         // Gérer la demande d'appel avec un timeout
         callManager.sendCallRequest(caller, target) {
-            caller.sendMessage("${target.name} isn't available.")
+            caller.sendMessage("${target.name} n'est pas disponible.")
             ringtonePlayer.stopRingtone(target) // Arrêter la sonnerie si l'appel n'est pas accepté
         }
 
-        target.sendMessage("${caller.name} is calling you... type /answer to accept or /decline to reject.")
-        caller.sendMessage("Calling ${target.name}...")
+        target.sendMessage("${caller.name} vous appelle... Tapez /answer pour accepter ou /decline pour refuser.")
+        caller.sendMessage("Appel en cours vers ${target.name}...")
 
         try {
             // Jouer la sonnerie pour le destinataire
             ringtonePlayer.playRingtone(target)
         } catch (e: Exception) {
-            caller.sendMessage("An error occurred while playing the ringtone.")
+            caller.sendMessage("Une erreur est survenue lors de la lecture de la sonnerie.")
             e.printStackTrace()
         }
 

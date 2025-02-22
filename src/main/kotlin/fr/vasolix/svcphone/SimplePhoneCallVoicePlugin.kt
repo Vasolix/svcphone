@@ -14,11 +14,10 @@ open class SimplePhoneCallVoicePlugin : VoicechatPlugin {
     override fun initialize(api: VoicechatApi) {
         voicechatApi = api
 
-        println("SimplePhoneCallVoicePlugin initialized with API!")
+        println("SimplePhoneCallVoicePlugin initialisé avec l'API !")
     }
 
     fun getApi(): VoicechatApi? {
         return voicechatApi
     }
-
 }

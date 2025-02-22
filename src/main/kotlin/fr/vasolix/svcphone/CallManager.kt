@@ -6,61 +6,61 @@ import java.util.*
 
 class CallManager {
     /**
-     * Holds information about a call for a single player:
-     * - who they're in a call with (`otherId`),
-     * - whether it's accepted (`accepted`).
+     * Contient les informations sur un appel pour un joueur :
+     * - avec qui il est en appel (`otherId`),
+     * - si l'appel a été accepté (`isAccepted`).
      */
     private class CallInfo(val otherId: UUID, var isAccepted: Boolean)
 
-    // We'll map each player's UUID to their CallInfo
+    // Associe chaque UUID de joueur à ses informations d'appel
     private val calls: MutableMap<UUID, CallInfo> = HashMap()
 
-    // Keep track of scheduled tasks for call timeouts
+    // Suivi des tâches programmées pour l'expiration des appels
     private val callTimeoutTasks: MutableMap<UUID, Int> = HashMap()
 
     /**
-     * Send a call request from `caller` to `target`. This is initially "not accepted."
+     * Envoie une demande d'appel de `caller` à `target`. Cet appel est initialement "non accepté".
      */
     fun sendCallRequest(caller: Player, target: Player, timeoutCallback: Runnable) {
         val callerId = caller.uniqueId
         val targetId = target.uniqueId
 
-        // Mark both as having a pending call (accepted=false)
+        // Marquer les deux joueurs comme ayant un appel en attente (accepted=false)
         calls[callerId] = CallInfo(targetId, false)
         calls[targetId] = CallInfo(callerId, false)
 
-        // Get the plugin reference and check if it's null
+        // Récupérer la référence du plugin et vérifier si elle est valide
         val plugin = Bukkit.getPluginManager().getPlugin("SimplePhoneCall")
         if (plugin == null) {
-            Bukkit.getLogger().severe("SimplePhoneCall plugin not found!")
+            Bukkit.getLogger().severe("Le plugin SimplePhoneCall est introuvable !")
             return
         }
 
-        // Schedule a 20-second timeout
+        // Planifier un délai d'expiration de 20 secondes
         val taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(
             plugin,
             {
-                // Check if the target still has a pending call from the caller
+                // Vérifier si la cible a toujours un appel en attente de l'appelant
                 val info = calls[targetId]
                 if (info != null && info.otherId == callerId && !info.isAccepted) {
-                    // The call was never accepted within 20s, end it
+                    // L'appel n'a pas été accepté dans les 20 secondes, on l'annule
                     endCall(callerId, targetId)
-                    timeoutCallback.run() // Only run if it's not null
+                    timeoutCallback.run() // Exécuter l'action d'expiration si elle est définie
                 } else {
-                    Bukkit.getLogger().info("Call accepted or no longer pending.")
+                    Bukkit.getLogger().info("Appel accepté ou plus en attente.")
                 }
             },
-            20L * 20 // 20 seconds in ticks
+            20L * 20 // 20 secondes en ticks
         )
 
         callTimeoutTasks[targetId] = taskId
     }
 
     /**
-     * Accept the call for both sides (meaning it's now "active").
+     * Accepte l'appel pour les deux participants (il devient alors "actif").
      */
     fun acceptCall(callerId: UUID, targetId: UUID) {
-        // If either side has an entry, mark it accepted
+        // Si l'une des deux entrées existe, marquer comme accepté
         if (calls.containsKey(callerId)) {
             calls[callerId]!!.isAccepted = true
         }
@@ -68,7 +68,7 @@ class CallManager {
             calls[targetId]!!.isAccepted = true
         }
 
-        // Cancel any timeout tasks if they're still running
+        // Annuler les tâches d'expiration si elles existent encore
         val taskA = callTimeoutTasks.remove(callerId)
         if (taskA != null) {
             Bukkit.getScheduler().cancelTask(taskA)
@@ -80,14 +80,14 @@ class CallManager {
     }
 
     /**
-     * True if this player has *any* call entry (pending or accepted).
+     * Retourne vrai si le joueur a *un appel en attente ou actif*.
      */
     fun hasCall(playerId: UUID): Boolean {
         return calls.containsKey(playerId)
     }
 
     /**
-     * True if this player has a call *and* it has been accepted.
+     * Retourne vrai si le joueur a *un appel actif* (accepté).
      */
     fun hasActiveCall(playerId: UUID): Boolean {
         val info = calls[playerId]
@@ -95,7 +95,7 @@ class CallManager {
     }
 
     /**
-     * Returns the UUID of the other participant in the player's call (or null if none).
+     * Retourne l'UUID de l'autre participant de l'appel du joueur (ou null s'il n'en a pas).
      */
     fun getOtherParticipant(playerId: UUID): UUID? {
         val info = calls[playerId]
@@ -103,7 +103,7 @@ class CallManager {
     }
 
     /**
-     * End the call for both players (removes from map and cancels timeouts).
+     * Termine l'appel pour les deux joueurs (supprime de la liste et annule les délais d'expiration).
      */
     fun endCall(a: UUID, b: UUID) {
         calls.remove(a)

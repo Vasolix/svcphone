@@ -13,6 +13,8 @@ class SimplePhoneCallPlugin : JavaPlugin() {
         // Initialisation du CallManager
         val callManager = CallManager()
 
+        val blockManager = BlockListManager(this)
+
         // Initialisation du RingtonePlayer
         val ringtonePlayer = RingtonePlayer(this)
 
@@ -29,10 +31,13 @@ class SimplePhoneCallPlugin : JavaPlugin() {
                     val serverApi = api as? VoicechatServerApi
                     if (serverApi != null) {
                         logger.info("Registering commands...")
-                        getCommand("call")?.setExecutor(CallCommand(callManager, ringtonePlayer))
+                        getCommand("call")?.setExecutor(CallCommand(callManager, ringtonePlayer, blockManager))
                         getCommand("answer")?.setExecutor(AnswerCommand(callManager, serverApi, ringtonePlayer))
                         getCommand("decline")?.setExecutor(DeclineCommand(callManager, ringtonePlayer))
                         getCommand("hangup")?.setExecutor(HangupCommand(callManager, serverApi))
+                        getCommand("blocklist")?.setExecutor(BlockListCommand(blockManager))
+                        getCommand("block")?.setExecutor(BlockCommand(blockManager))
+                        getCommand("unblock")?.setExecutor(UnBlockCommand(blockManager))
                         logger.info("Commands registered successfully!")
                     } else {
                         logger.warning("Failed to cast VoicechatApi to VoicechatServerApi!")

@@ -16,7 +16,7 @@ class AnswerCommand(
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("Only players can use this command.")
+            sender.sendMessage("Seuls les joueurs peuvent utiliser cette commande.")
             return true
         }
 
@@ -25,26 +25,26 @@ class AnswerCommand(
 
         // Vérifier si le joueur a un appel en attente ou actif
         if (!callManager.hasCall(targetId)) {
-            target.sendMessage("You don't have any incoming calls to answer.")
+            target.sendMessage("Vous n'avez aucun appel entrant à accepter.")
             return true
         }
 
         // Vérifier si l'appel est déjà accepté
         if (callManager.hasActiveCall(targetId)) {
-            target.sendMessage("This call has already been accepted. Use /hangup instead.")
+            target.sendMessage("Cet appel a déjà été accepté. Utilisez /hangup à la place.")
             return true
         }
 
         // Récupérer l'appelant
         val callerId: UUID? = callManager.getOtherParticipant(targetId)
         if (callerId == null) {
-            target.sendMessage("You don't have any incoming calls to answer.")
+            target.sendMessage("Vous n'avez aucun appel entrant à accepter.")
             return true
         }
 
         val caller: Player? = target.server.getPlayer(callerId)
         if (caller == null || !caller.isOnline) {
-            target.sendMessage("The caller is no longer online.")
+            target.sendMessage("L'appelant n'est plus en ligne.")
             callManager.endCall(targetId, callerId)
             return true
         }
@@ -58,7 +58,7 @@ class AnswerCommand(
         // Créer un groupe vocal privé
         val password = UUID.randomUUID().toString().substring(0, 8)
         val group: Group = serverApi.groupBuilder()
-            .setName("Private Call: ${caller.name} & ${target.name}")
+            .setName("Appel privé : ${caller.name} & ${target.name}")
             .setPassword(password)
             .setPersistent(false)
             .setType(Group.Type.ISOLATED)
@@ -69,8 +69,8 @@ class AnswerCommand(
         serverApi.getConnectionOf(target.uniqueId)?.group = group
 
         // Notifier les joueurs
-        caller.sendMessage("${target.name} answered the call! You are now in a private group.")
-        target.sendMessage("You answered the call with ${caller.name}! You are now in a private group.")
+        caller.sendMessage("${target.name} a répondu à l'appel ! Vous êtes maintenant dans un groupe privé.")
+        target.sendMessage("Vous avez répondu à l'appel avec ${caller.name} ! Vous êtes maintenant dans un groupe privé.")
 
         return true
     }
